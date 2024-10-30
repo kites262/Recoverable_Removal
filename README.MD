@@ -39,7 +39,7 @@ To restore the last removed file, run `rr --restore`.
 To use RR directly, simply run the following command:
 
 ```bash
-<<TODO: Auto install sh>>
+curl -L https://github.com/kites262/Recoverable_Removal/raw/main/scripts/installer/install_rr_amd64.sh | bash
 ```
 
 ### Build from Source
