@@ -40,6 +40,9 @@ To use RR directly, simply run the following command:
 
 ```bash
 curl -L https://github.com/kites262/Recoverable_Removal/raw/main/scripts/installer/install_rr_amd64.sh | bash
+
+# Or by proxy
+curl -L https://ghproxy.cc/https://raw.githubusercontent.com/kites262/Recoverable_Removal/main/scripts/installer/install_rr_amd64_ghproxy.sh | bash
 ```
 
 ### Build from Source
