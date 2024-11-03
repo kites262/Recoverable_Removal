@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义下载 URL 和目标路径
-URL="https://github.com/kites262/Recoverable_Removal/releases/download/v0.1.1/rr-amd64"
+URL="https://github.com/kites262/Recoverable_Removal/releases/download/v0.1.2/rr-amd64"
 DEST="/usr/local/bin/rr"
 
 # 下载文件
