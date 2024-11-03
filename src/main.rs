@@ -3,6 +3,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
 use chrono::Local;
+use home::home_dir;
 
 fn main() {
     // Get command line arguments, skipping the first one (program name)
@@ -12,12 +13,16 @@ fn main() {
         std::process::exit(1);
     }
 
+    // Get user's home directory
+    let home_path = home_dir().expect("Unable to find home directory");
+    let base_removed_dir = home_path.join(".rr_removed");
+
     if args[0] == "--restore" {
         // Handle restore functionality
         println!("Starting restore process...");
 
         // Read last.tag file
-        let last_tag_path = PathBuf::from("/var/tmp/rr_removed/last.tag");
+        let last_tag_path = base_removed_dir.join("last.tag");
         let last_tag_contents = fs::read_to_string(&last_tag_path)
             .expect("Unable to read last.tag file");
 
@@ -35,8 +40,8 @@ fn main() {
         // Write back the rest of the lines to last.tag
         fs::write(&last_tag_path, lines.join("\n")).expect("Unable to write to last.tag file");
 
-        // Construct base_dir as /var/tmp/rr_removed/{timestamp}
-        let base_dir = PathBuf::from("/var/tmp/rr_removed").join(&timestamp);
+        // Construct base_dir as ~/.rr_removed/{timestamp}
+        let base_dir = base_removed_dir.join(&timestamp);
 
         // Read rr_removed.restore_path.txt to get restore path
         let restore_path_file_path = base_dir.join("rr_removed.restore_path.txt");
@@ -102,17 +107,14 @@ fn main() {
             println!("Files have been successfully restored to: \n{}", restore_path.display());
         }
 
-        // Optionally, remove the base_dir
-        // fs::remove_dir_all(&base_dir).expect("Unable to remove base directory");
-
     } else {
         // Handle delete (move to trash) functionality
 
         // Get the current date in the format YYYY-MM-DD
         let date = Local::now().format("%Y-%m-%d-%H-%M-%S-%f").to_string();
 
-        // Construct the base directory path /var/tmp/rr_removed/{timestamp}
-        let base_dir = PathBuf::from("/var/tmp/rr_removed").join(&date);
+        // Construct the base directory path ~/.rr_removed/{timestamp}
+        let base_dir = base_removed_dir.join(&date);
 
         // Create the restore directory
         let restore_dir = base_dir.join("restore");
@@ -124,7 +126,7 @@ fn main() {
         }
 
         // Append the timestamp to last.tag
-        let last_tag_path = PathBuf::from("/var/tmp/rr_removed/last.tag");
+        let last_tag_path = base_removed_dir.join("last.tag");
         let mut last_tag_file = OpenOptions::new()
             .create(true)
             .append(true)
@@ -165,8 +167,6 @@ fn main() {
             if let Err(e) = fs::rename(&src, &dest) {
                 eprintln!("Error moving {} to {}: {}", src.display(), dest.display(), e);
                 continue;
-            } else {
-                // println!("Delete '{}', files restored to '{}'", src.display(), dest.display());
             }
         }
     }
